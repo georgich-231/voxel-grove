@@ -1,0 +1,79 @@
+{
+  "name": "mc-clone",
+  "version": "0.1.2",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "worldgen:extract": "node scripts/extract-minecraft26-worldgen.mjs",
+    "predev": "npm run worldgen:extract",
+    "dev": "vite --host 127.0.0.1",
+    "desktop": "npm run build && node electron/run.cjs",
+    "desktop:dev": "node electron/dev-runner.cjs",
+    "host": "node electron/host-runner.cjs",
+    "friend:play": "npm run desktop",
+    "friend:host": "npm run host",
+    "package:win": "node scripts/package-windows.cjs --installer",
+    "package:portable": "node scripts/package-windows.cjs --portable",
+    "package:dir": "node scripts/package-windows.cjs --dir --no-bump --keep-release",
+    "server": "node server/multiplayerServer.mjs",
+    "prebuild": "npm run worldgen:extract",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test:render": "playwright test",
+    "pretest:biomes": "npm run worldgen:extract",
+    "test:biomes": "node --test tests/biomeGen18.test.mjs",
+    "pretest:worldgen": "npm run worldgen:extract",
+    "test:worldgen": "node --test tests/minecraft26Terrain.test.mjs"
+  },
+  "dependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.1.0",
+    "deepslate": "^0.26.0",
+    "three": "^0.181.2",
+    "vite": "^7.2.4",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "adm-zip": "^0.5.16",
+    "electron": "^42.0.1",
+    "electron-builder": "^26.15.2"
+  },
+  "build": {
+    "appId": "dev.voxelgrove.game",
+    "productName": "Voxel Grove",
+    "asar": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "server/**/*",
+      "src/multiplayer/protocol.js",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Voxel Grove",
+      "artifactName": "Voxel-Grove-Setup-${version}-${arch}.${ext}"
+    },
+    "portable": {
+      "artifactName": "Voxel-Grove-Portable-${version}-${arch}.${ext}"
+    }
+  }
+}
